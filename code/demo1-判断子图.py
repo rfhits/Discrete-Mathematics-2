@@ -9,8 +9,6 @@ import sys
 sys.path.append('/graph')
 
 
-
-
 V = {'a', 'c', 'b', 'd', 'e'}
 E = {('b', 'c'), ('a', 'c'), ('a', 'b'), ('a', 'd'), ('a', 'e'), ('b', 'd'), ('c', 'd'), ('c', 'e'), ('b', 'e'),
      ('d', 'e')}

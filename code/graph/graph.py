@@ -1,5 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import random
 
 # 此文件包含的方法有：
 # draw方法
@@ -23,6 +24,22 @@ def draw_digraph(E):
     nx.draw(G, node_size=200, node_color='r', with_labels=True, font_color='w')
     plt.show()
     return
+
+
+def Cartesianproduct(X, Y):
+    XY = set({})
+    for x in X:
+        for y in Y:
+            XY.add((x, y))
+    return XY
+
+
+def create_graph(m, n):
+    global V, XY
+    V = range(m)
+    XY = Cartesianproduct(V, V)
+    E = random.sample(XY, n)
+    return [V, E]
 
 
 def is_subgraph(V, E, Vs, Es):
@@ -81,3 +98,33 @@ def complete_set_another(n):
                 E.add((i, j))
                 # E = {(i, j): i, j = 0~n & i != j}
     return (V, E)
+
+
+def connected_graph(V, E, V0, E0):
+    """调用时，将E0赋值为E的第一条边，V0为E0的两个点"""
+    # (u, v) = E[0]
+    # E0 = {(u, v)}
+    # V0 = {u, v}
+    Vc = V0
+    Ec = E0
+    while E != set({}):
+        n = len(Ec)  # 记录未进行子图扩展时，有几条边
+        for (u, v) in E:    # 遍历原图的边，能添加，就添加
+            if (u, v) not in Ec and (u in Vc or v in Vc):
+                Vc = Vc | {u, v}
+                Ec = Ec | {(u, v)}
+        if len(Ec) == n:
+            # 若遍历后，子图的边的数量不变，说明扩了相当于没扩展，可以退出
+            break
+    return [Vc, Ec]
+
+
+def is_connected_graph(V, E):
+    V = list(V)
+    E = list(E)
+    (u, v) = E[0]
+    V0 = {u, v}
+    E0 = {(u, v)}
+    [Vc, Ec] = connected_graph(V, E, V0, E0)
+    tv = (set(V) == set(Vc)) & (set(Ec) == set(E))
+    return tv
