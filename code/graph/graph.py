@@ -1,5 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import numpy as np
 import random
 
 # 此文件包含的方法有：
@@ -9,7 +10,7 @@ import random
 
 
 def draw_graph(E):
-    '''画无向图'''
+    '''通过边集，画无向图'''
     G = nx.Graph()
     G.add_edges_from(E)
     nx.draw(G, node_size=200, node_color='r', with_labels=True, font_color='w')
@@ -35,6 +36,7 @@ def Cartesianproduct(X, Y):
 
 
 def create_graph(m, n):
+    """m个顶点的完全图，取n条边，随便画个图"""
     global V, XY
     V = range(m)
     XY = Cartesianproduct(V, V)
@@ -128,3 +130,55 @@ def is_connected_graph(V, E):
     [Vc, Ec] = connected_graph(V, E, V0, E0)
     tv = (set(V) == set(Vc)) & (set(Ec) == set(E))
     return tv
+
+
+def graph2array(V, E):
+    n = len(V)
+    A = np.zeros((n, n), dtype='int')
+    A = np.array(A)
+    for i in range(n):
+        for j in range(n):
+            if (i, j) in E:
+                A[i, j] = 1
+    return A
+
+
+def degree_set(V, E):
+    """给出每个点的度、入度和出度"""
+    V = sorted(V)
+    m = len(V)
+    di = [0]*m
+    do = [0]*m
+    d = [0]*m
+    for (u, v) in E:
+        i = V.index(u)
+        j = V.index(v)
+        di[j] += 1
+        do[i] += 1
+        d[i] += 1
+        d[j] += 1
+    return [d, di, do]
+
+
+def shortpath(V, E, di, Hx, path, zn):
+    V = sorted(V)
+    Pm = []
+    for p in path:
+        vn = p[-1]
+        if vn == zn:
+            Pm = Pm + [p]
+            continue
+        if di[V.index(vn)] != 0:
+            Pm = Pm + [p]
+            continue
+        for (w, u, v) in E:
+            if u == vn:
+                kv = V.index(v)
+                if di[kv] > 0:
+                    di[kv] = di[kv]-1
+                vw = p[0]+w
+                if vw <= Hx[kv]:
+                    Hx[kv] = vw
+                    e = [vw] + p[1:] + [v]
+                    Pm = Pm + [e]
+    return [di, Hx, Pm]
