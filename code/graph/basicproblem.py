@@ -226,7 +226,67 @@ def HuffmanCoding(tree):
     code1 = huffmancoding(tree[2], '1')
     return code0+code1
 
-W=[['A',0.4], ['B',0.1], ['C',0.2], ['D',0.15], ['E',0.15]]
-tree=Huffmantree(W)
-C=HuffmanCoding(tree)
+
+W = [['A', 0.4], ['B', 0.1], ['C', 0.2], ['D', 0.15], ['E', 0.15]]
+tree = Huffmantree(W)
+C = HuffmanCoding(tree)
 print(C)
+
+
+def Prim_span_tree(V, E):
+    """given [V_list, E_list],
+        return [V_list, E_list]"""
+    E = sorted(E)
+    [w, u, v] = E[0]
+    Vt = {u, v}
+    Et = {(w, u, v)}
+    del E[0]
+    n = len(V)
+    while (len(Et) < (n-1)):
+        i = 0
+        while(i < len(E)):
+            [w, u, v] = E[i]
+            if (u in Vt and v not in Vt) or (u not in Vt and v in Vt):
+                Et = Et | {(w, u, v)}
+                Vt = Vt | {u, v}
+                del E[i]
+                break
+            i = i+1
+    return [Vt, Et]
+
+
+def is_cycled(V, E, u0, v0):
+    tv = False
+    Vc = {u0, v0}
+    Ec = {(u0, v0)}
+    n = 0
+    while(n != len(Vc)):
+        n = len(Vc)
+        for (w, u, v) in E:
+            if((u in Vc) and (v in Vc)):
+                tv = True
+                return tv
+            if (u in Vc and v not in Vc) or (u not in Vc and v in Vc):
+                Ec = Ec | {(u, v)}
+                Vc = Vc | {u, v}
+                E = E-{(w, u, v)}
+                break
+    return tv
+
+
+def Kruskal_span_tree(V, E):
+    E = sorted(E)
+    Vt = set({})
+    Et = set({})
+    n = len(V)
+    k = 0
+    i = 0
+    while(len(Et) < n-1):
+        [w, u, v] = E[i]
+        i = i+1
+        if(((u in Vt) and (v in Vt))):
+            if(is_cycled(Vt, Et, u, v)):
+                continue
+        Et = Et | {(w, u, v)}
+        Vt = Vt | {u, v}
+    return [Vt, Et]
