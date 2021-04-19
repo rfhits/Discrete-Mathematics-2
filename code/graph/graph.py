@@ -27,6 +27,15 @@ def draw_digraph(E):
     return
 
 
+def draw_weighted_graph(E):
+    '''通过边集，画无向图'''
+    G = nx.Graph()
+    E_weight = [(e[1], e[2], e[0]) for e in E]
+    G.add_weighted_edges_from(E_weight)
+    nx.draw(G, node_size=200, node_color='r', with_labels=True, font_color='w')
+    plt.show()
+    return
+
 def Cartesianproduct(X, Y):
     XY = set({})
     for x in X:
