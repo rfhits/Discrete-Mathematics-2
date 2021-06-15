@@ -36,7 +36,15 @@ def draw_weighted_graph(E):
     plt.show()
     return
 
+
 def Cartesianproduct(X, Y):
+    """生成两个集合的笛卡尔积
+
+    Parameter
+    ----
+    X: a set
+    Y: a set
+    """
     XY = set({})
     for x in X:
         for y in Y:
@@ -51,6 +59,14 @@ def create_graph(m, n):
     XY = Cartesianproduct(V, V)
     E = random.sample(XY, n)
     return [V, E]
+
+
+def is_graph(V, E):
+    """判读是不是图"""
+    tv = True
+    for (u, v) in E:
+        tv = tv and (u in V) and (v in V)
+    return tv
 
 
 def is_subgraph(V, E, Vs, Es):
