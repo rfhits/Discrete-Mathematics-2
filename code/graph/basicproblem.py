@@ -64,9 +64,14 @@ def Eulercircuit(E, v0):
 
 
 def adjacentlist(V, E):
-    """给出邻接表"""
-    # [ [1,[2,3]], [2, [3]], [3,[1,2]] ]
-    # 1和23连，2和3连，3和12连
+    """given vetice and edges,
+    
+    return adjacent list
+    
+    return type like:
+
+    [ [1,[2,3]], [2, [3]], [3,[1,2]] ]
+    """
     Ea = []
     for w in V:
         e0 = [w]
@@ -82,11 +87,15 @@ def adjacentlist(V, E):
 
 
 def tourpath0(V, E, path, m):
+    """given vertex set, adjacent list, path
+    
+    尽量使用邻接表中靠前的点，走出一条尽可能长的path 
+    """
     while(len(path) < m):
         w = path[-1]
         i = V.index(w)
         E1 = E[i]
-        E2 = E1[1]
+        E2 = E1[1] # 该点所对应的邻接点的集合
         for u in E2:
             if(u not in path):
                 path.append(u)
@@ -97,6 +106,7 @@ def tourpath0(V, E, path, m):
 
 
 def tourpath1(V, E, path, m):
+    """末尾点走不下去了，据末尾点在倒数第二个点邻接表中的index，换后面的点再走。"""
     v = path.pop()
     while(len(path) != 0):
         u = path[-1]
