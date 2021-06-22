@@ -115,6 +115,61 @@ def complete_set(n):
     # E = {(1, 2), (2, 3), (0, 3), (0, 2), (0, 1), (1, 3)}
 
 
+def pathset0(V, E, u0):
+    """
+    given u0, return len = 2 path, like
+
+    {(u0, v0), (u0,v1),...}
+    """
+    path1 = set({})
+    for (u, v) in E:
+        if(u == u0):
+            path1 = path1 | {(u, v)}
+    return path1
+
+
+def pathset(path0, E):
+    """
+    try to take one step for each path in given pathset0
+
+    given: path0 = {(u_0, u_1,..., u_n-1), (...), (...)}
+
+    ret: path1 = {(u_0, u_1,..., u_n), (...), (...)}
+    """
+    path = set({})
+    for p0 in path0:
+        y = p0[-1]
+        for (u, v) in E:
+            if u == v:  # 自环无用
+                continue
+            p = p0
+            if (u == y):
+                p = p+tuple([v])
+                path = path | {p}
+    return path
+
+
+def basic_pathset(path0, E):
+    """
+    基本通路算法
+
+    try to take one step for each path in pathset0
+
+    this step wont use those vetex in origin path
+    """
+    path = set({})
+    for pk in path0:
+        x = pk[-1]
+        for (u, v) in E:
+            if u == v:
+                continue
+            p = pk
+            if (u == x and (v not in pk)):
+                p = p + tuple([v])
+                path = path | {p}
+    return path
+
+
 def complete_set_another(n):
     V = set({})
     E = set({})
@@ -128,7 +183,12 @@ def complete_set_another(n):
 
 
 def connected_graph(V, E, V0, E0):
-    """调用时，将E0赋值为E的第一条边，V0为E0的两个点"""
+    """
+    generate a connected graph for V, E from V0, E0
+
+    调用前，将E0赋值为E的第一条边，V0为E0的两个点，
+
+    所谓“脱裤子放屁”，莫过于此"""
     # (u, v) = E[0]
     # E0 = {(u, v)}
     # V0 = {u, v}
@@ -136,17 +196,28 @@ def connected_graph(V, E, V0, E0):
     Ec = E0
     while E != set({}):
         n = len(Ec)  # 记录未进行子图扩展时，有几条边
-        for (u, v) in E:    # 遍历原图的边，能添加，就添加
+        for (u, v) in E:    # 遍历原图的边，能添加，就添加，疯狂扩展
             if (u, v) not in Ec and (u in Vc or v in Vc):
                 Vc = Vc | {u, v}
                 Ec = Ec | {(u, v)}
         if len(Ec) == n:
-            # 若遍历后，子图的边的数量不变，说明扩了相当于没扩展，可以退出
+            # 若遍历后，子图的边的数量不变，
+            # 说明扩了相当于没扩展，可以退出
             break
     return [Vc, Ec]
 
 
 def is_connected_graph(V, E):
+    """
+    judge is [V, E] a connected graph
+
+    using connected_graph() to generate a graph from V,E
+
+    compare [V, E] with [Vc, Ec]
+
+    if [V, E] is connected, then [Vc, Ec] should be same as it
+    
+    """
     V = list(V)
     E = list(E)
     (u, v) = E[0]

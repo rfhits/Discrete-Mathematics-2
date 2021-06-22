@@ -1,3 +1,4 @@
-homework
-test.*
 *.code-workspace
+test.*
+.vscode
+homework
