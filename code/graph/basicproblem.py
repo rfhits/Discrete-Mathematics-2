@@ -309,7 +309,7 @@ def TLpath(S, Hy, do):
 
 
 def craticalTE(V, E, di, v0, vn):
-    Hx = [0]*len(V) # time list
+    Hx = [0]*len(V)  # time list
 
     di0 = {v0}
     while vn not in di0:
@@ -345,6 +345,49 @@ def craticalpath(V, E, di, do, v0, vn):
         if u in C and v in C:
             Pc = Pc | {(w, u, v)}
     return [Pc, Hx, Hy]
+
+
+def graph2tree(V, E):
+    E = sorted(E)
+    (u, v) = E[0]
+    Vt = {u, v}
+    Et = {(u, v)}
+    E = set(E)
+    n = len(V)
+    while(len(Et) < (n-1)):
+        m = len(Vt)
+        for (u, v) in E:
+            if((u in Vt and v not in Vt)
+               or (u not in Vt and v in Vt)):
+                Vt = Vt | {u, v}
+                Et = Et | {(u, v)}
+        E = E-Et
+        if(m == len(Vt)):
+            break
+    return [Vt, Et]
+
+
+def is_tree(V, E):
+    tv = True
+    E = sorted(E)
+    (u, v) = E[0]
+    Vt = {u, v}
+    E = set(E)-{(u, v)}
+    Et = {(u, v)}
+    while(E != set({})):
+        for (u, v) in E:
+            if (u in Vt) and (v in Vt):
+                tv = False
+                break
+            if ((u in Vt) and (v not in Vt)) or ((u not in Vt) and (v in Vt)):
+                Vt = Vt | {u, v}
+                E = E-{(u, v)}
+                Et = Et | {(u, v)}
+        if(tv == False):
+            break
+    if((len(Vt)-1) != len(Et)):
+        tv = False
+    return tv
 
 
 def Huffmantree(W):

@@ -115,6 +115,42 @@ def complete_set(n):
     # E = {(1, 2), (2, 3), (0, 3), (0, 2), (0, 1), (1, 3)}
 
 
+def MNgraph(m, n):  # m列n行
+    """
+    生成m行n列的图
+
+    Example
+    ---
+    m = 3, n = 2
+
+    return "日"字图
+    """
+    V = set({})
+    E = set({})
+    for i in range(m):
+        for j in range(n-1):
+            u = i*n+j
+            v = u+1
+            V = V | {u, v}
+            E = E | {(u, v)}
+    for i in range(m-1):
+        for j in range(n):
+            u = i*n+j
+            v = u+n
+            E = E | {(u, v)}
+    return [V, E]
+
+
+def weightedgraph(V0, E0, W0):
+    """基于无向图V0、E0，为每条边附上random(1, W0)权重，返回一个有向图"""
+    V = V0
+    E = set({})
+    for (u, v) in E0:
+        w = random.randint(1, W0)
+        E = E | {(w, u, v)}
+    return [V, E]
+
+
 def pathset0(V, E, u0):
     """
     given u0, return len = 2 path, like
@@ -216,7 +252,7 @@ def is_connected_graph(V, E):
     compare [V, E] with [Vc, Ec]
 
     if [V, E] is connected, then [Vc, Ec] should be same as it
-    
+
     """
     V = list(V)
     E = list(E)
