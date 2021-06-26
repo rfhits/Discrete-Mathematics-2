@@ -2,7 +2,18 @@ import math
 
 
 def degree_set_w(V, E):
-    """给出每个点的度、入度和出度"""
+    """
+    给出每个点的度、入度和出度
+
+    Example
+    ---
+    return: \n
+    [\n
+    d = [2,3,4],\n
+    d_in = [1,2,2],\n
+    d_out = [1,2,2]\n
+    ]
+    """
     V = sorted(V)
     m = len(V)
     di = [0]*m
@@ -65,9 +76,9 @@ def Eulercircuit(E, v0):
 
 def adjacentlist(V, E):
     """given vetice and edges,
-    
+
     return adjacent list
-    
+
     return type like:
 
     [ [1,[2,3]], [2, [3]], [3,[1,2]] ]
@@ -88,14 +99,14 @@ def adjacentlist(V, E):
 
 def tourpath0(V, E, path, m):
     """given vertex set, adjacent list, path
-    
+
     尽量使用邻接表中靠前的点，走出一条尽可能长的path 
     """
     while(len(path) < m):
         w = path[-1]
         i = V.index(w)
         E1 = E[i]
-        E2 = E1[1] # 该点所对应的邻接点的集合
+        E2 = E1[1]  # 该点所对应的邻接点的集合
         for u in E2:
             if(u not in path):
                 path.append(u)
@@ -155,17 +166,17 @@ def Hamiltonpath(V, E, v0):
 
 
 def short_path(V, E, di, Hx, path, zn):
+    """我记得马殿富这个代码是错的，慎用"""
 
     # Hx就是记录V[0]和其他点之间距离的list
-
-    #     对于所有路径p
+    # 对于所有路径p
     # vn是路径p的最后顶点
     # 若vn不是终止顶点
     # 对于所有边(u,v,d)∈E
     # 若u==vn
     # 求新顶点距离vd
     # if vd<=Hx[kv]
-    #         增加新顶点v
+    # 增加新顶点v
 
     V = sorted(V)
     Pm = []
@@ -191,6 +202,7 @@ def short_path(V, E, di, Hx, path, zn):
 
 
 def shortest_path(V, E, v0, vn):
+    """我记得马殿富这个代码错的，慎用"""
     V = sorted(V)
     [d, di, do] = degree_set_w(V, E)
     Pm0 = []
@@ -200,11 +212,139 @@ def shortest_path(V, E, v0, vn):
     # Hx就是记录V[0]和其他点之间距离的list
     Hx[0] = 0
     while Pm0 != Pm:
-        # 知道某次操作，Pm0和Pm不变
+        # 直到某次操作，Pm0和Pm不变
         Pm0 = Pm
         [di, Hx, Pm] = short_path(V, E, di, Hx, Pm0, vn)
     Pm = sorted(Pm)
     return [Hx, Pm]
+
+
+def Dijstra(V, E, v0):
+    """给定V、E和起始顶点，给出最短路径长度
+
+    我自己写的，应该对的"""
+    # Dst表示distance dict，
+    # v0到各个顶点目前已知的距离，初始化为infty
+    # N表示已经被确认是最短距离的那些点
+
+    # 在Dst中选一个最小的点（此点不在N中）
+    # 然后添加到N中，并且更新Dst
+    if v0 not in V:
+        print("the vertex not in Graph")
+        return
+    N = []
+    inf = 10000
+    Dst = dict()
+    for v in V:
+        Dst[v] = inf
+    Dst[v0] = 0
+    sortedDst = None
+    ancher = None
+    while sorted(N) != sorted(V):
+        sortedDst = sorted(Dst.items(), key=lambda x: x[1])
+        # 这一段循环，只是为了找到目前距离最小且未被添加进N的点
+        for (v, d) in sortedDst:
+            if v in N:
+                pass
+            else:
+                # 成功拿到第一个不在N中，并且dst最小的v
+                # 取名为anchor
+                N.append(v)
+                ancher = v
+                break
+
+        # 根据edges刷新Dst
+        for (w, x, y) in E:
+            if x == ancher and w + Dst[x] < Dst[y]:
+                Dst[y] = w + Dst[x]
+            elif y == ancher and w + Dst[y] < Dst[x]:
+                Dst[x] = w + Dst[y]
+            else:
+                pass
+    print(Dst)
+    return Dst
+
+
+def stepu0v(di0, E):
+    """given know early_finished_time vetices and edges, return avaible edges"""
+    S = set({})
+    for u0 in di0:
+        for (w, u, v) in E:
+            if u == u0:
+                S = S | {(w, u, v)}
+    return S
+
+
+def stepuv0(do0, E):
+    S = set({})
+    for v0 in do0:
+        for (w, u, v) in E:
+            if v == v0:
+                S = S | {(w, u, v)}
+    return S
+
+
+def TEpath(S, Hx, di):
+    di0 = set({})
+    for (w, u, v) in S:
+        if Hx[v] < Hx[u]+w:
+            Hx[v] = Hx[u]+w
+        if di[v] > 0:
+            di[v] = di[v]-1
+        if di[v] == 0:
+            di0 = di0 | {v}
+    return [Hx, di, di0]
+
+
+def TLpath(S, Hy, do):
+    do0 = set({})
+    for (w, u, v) in S:
+        if Hy[u] > Hy[v]-w:
+            Hy[u] = Hy[v]-w
+        if do[u] > 0:
+            do[u] = do[u]-1
+        if do[u] == 0:
+            do0 = do0 | {u}
+    return [Hy, do, do0]
+
+
+def craticalTE(V, E, di, v0, vn):
+    Hx = [0]*len(V) # time list
+
+    di0 = {v0}
+    while vn not in di0:
+        S = stepu0v(di0, E)
+        [Hx, di, di0] = TEpath(S, Hx, di)
+        E = E-S
+    return Hx
+
+
+def craticalTL(V, E, do, Hn, v0, vn):
+    Hy = [1000]*len(V)
+    Hy[len(V)-1] = Hn
+    do0 = {vn}
+    while v0 not in do0:
+        S = stepuv0(do0, E)
+        [Hy, do, do0] = TLpath(S, Hy, do)
+        E = E-S
+    return Hy
+
+
+def craticalpath(V, E, di, do, v0, vn):
+    Hx = craticalTE(V, E, di, v0, vn)
+    Hn = Hx[len(V)-1]
+    Hy = craticalTL(V, E, do, Hn, v0, vn)
+    V = list(V)
+    N = len(V)
+    C = set({})
+    for k in range(N):
+        if Hx[k] == Hy[k]:
+            C = C | {V[k]}
+    Pc = set({})
+    for (w, u, v) in E:
+        if u in C and v in C:
+            Pc = Pc | {(w, u, v)}
+    return [Pc, Hx, Hy]
 
 
 def Huffmantree(W):
